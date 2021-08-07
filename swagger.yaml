@@ -15,7 +15,7 @@ tags:
   - name: "unlock"
     description: "Using SecretKeys to unlock LaunchCodes"
 schemes:
-#  - "https"
+  - "https"
   - "http"
 paths:
   /code:
