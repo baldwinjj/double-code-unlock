@@ -1,0 +1,133 @@
+swagger: "2.0"
+host: 'localhost:8080'
+info:
+  description: "Users will supply your *CodeService* with a user defined *LaunchCode*. Your service will need to store that *LaunchCode*, for later retrieval, and then generate and return two unique *SecretKeys*. These two *SecretKeys* can then be distributed to two trusted individuals. In order to retrieve the *LaunchCode* from your *CodeService*, both *KeyHolders* must use their *SecretKeys* within the same (configurable) timespan. After both *SecretKeys* have been used, *KeyHolders* should then have access to the *LaunchCode*."
+  version: "1.0.0"
+  title: "Nuclear Codes"
+  contact:
+    email: "phil.gates-idem@jupiterone.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+tags:
+  - name: "code"
+    description: "Generating and retrieving LaunchCodes"
+  - name: "unlock"
+    description: "Using SecretKeys to unlock LaunchCodes"
+schemes:
+#  - "https"
+  - "http"
+paths:
+  /code:
+    post:
+      tags:
+        - "code"
+      summary: "Supply a new LaunchCode and receive two SecretKeys"
+      description: ""
+      operationId: "newLaunchCode"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: ""
+          required: true
+          schema:
+            $ref: "#/definitions/NewLaunchCode"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NewLaunchCodeResponse"
+        "405":
+          description: "Invalid input"
+  /unlock:
+    post:
+      tags:
+        - "unlock"
+      summary: "When the time comes to retrieve the LaunchCode, both KeyHolders will use their individual SecretKey against this endpoint to unlock the LaunchCode; If both KeyHolders use their key within the (configurable) timespan required the LaunchCode will be unlocked. However, if the KeyHolders fail to meet the (configurable) timespan, then the LaunchCode should remain locked, and the KeyHolders must try again."
+      description: "Unlock LaunchCode with SecretKey"
+      operationId: "unlockLaunchCode"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: ""
+          required: true
+          schema:
+            $ref: "#/definitions/UnlockLaunchCode"
+      responses:
+        "200":
+          description: "successful operation"
+        "404":
+          description: "LaunchCode not found"
+  /code/{id}:
+    get:
+      tags:
+        - "code"
+      summary: "Unauthenticated users - KeyMasters - should send this endpoint a LaunchCode and then receive back two SecretKeys and an ID. The KeyMaster should give the ID and these SecretKeys to whomever they decide is worthy of being a KeyHolder. Your service is not responsible for facilitating the transfer of SecretKeys to KeyHolders"
+      description: "Retrieve LaunchCode by ID"
+      operationId: "getLaunchCode"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of LaunchCode"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/LaunchCodeStatus"
+        "404":
+          description: "Code not found"
+definitions:
+  NewLaunchCode:
+    type: "object"
+    required:
+      - "launchCode"
+    properties:
+      launchCode:
+        type: "string"
+  NewLaunchCodeResponse:
+    type: "object"
+    required:
+      - "id"
+      - "secretKeys"
+    properties:
+      id:
+        type: "string"
+      secretKeys:
+        type: "array"
+        items:
+          type: "string"
+  LaunchCodeStatus:
+    type: "object"
+    required:
+      - "status"
+    properties:
+      status:
+        type: "string"
+        description: "Status of LaunchCode"
+        enum:
+          - "unlocked"
+          - "locked"
+      launchCode:
+        type: "string"
+  UnlockLaunchCode:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        description: "ID of LaunchCode"
+      secretKey:
+        type: "string"
