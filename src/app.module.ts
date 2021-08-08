@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CodesController } from './codes/codes.controller';
-import { UnlocksController } from './unlocks/unlocks.controller';
 import { HealthController } from './health/health.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { CodesModule } from './codes/codes.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController, CodesController, UnlocksController, HealthController],
+  imports: [
+    MongooseModule.forRoot('mongodb://localhost:27018/jupiter-one'),
+    CodesModule,
+  ],
+  controllers: [AppController, HealthController],
   providers: [AppService],
 })
 export class AppModule {}
