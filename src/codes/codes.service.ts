@@ -21,6 +21,6 @@ export class CodesService {
   }
 
   findOne(id: string) {
-    // TODO: only return
+    return this.codeModel.findOne({ _id: id }).exec();
   }
 }

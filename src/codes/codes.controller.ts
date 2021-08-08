@@ -4,6 +4,7 @@ import { CodesService } from './codes.service';
 import { Code } from './entities/code.entity';
 import { NewLaunchCodeResponseDto } from './dto/new-launch-code-response.dto';
 import { plainToClass } from 'class-transformer';
+import { LaunchCodeStatusDto } from './dto/launch-code-status.dto';
 
 @Controller('code')
 export class CodesController {
@@ -15,7 +16,8 @@ export class CodesController {
     return plainToClass(NewLaunchCodeResponseDto, codeModel);
   }
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return;
+  async findOne(@Param('id') id: string): Promise<LaunchCodeStatusDto> {
+    const codeModel = await this.codesService.findOne(id);
+    return plainToClass(LaunchCodeStatusDto, codeModel);
   }
 }
