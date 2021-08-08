@@ -1,9 +1,9 @@
 import { IsMongoId, IsString } from 'class-validator';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 
 export class UnlockLaunchCodeDto {
   @IsMongoId()
-  id: ObjectId;
+  id: Types.ObjectId;
 
   @IsString()
   secretKey: string;

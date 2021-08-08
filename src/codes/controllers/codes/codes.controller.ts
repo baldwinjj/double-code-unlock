@@ -1,11 +1,10 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { NewLaunchCodeDto } from '../../dto/new-launch-code.dto';
 import { CodesService } from '../../codes.service';
-import { Code } from '../../entities/code.entity';
 import { NewLaunchCodeResponseDto } from '../../dto/new-launch-code-response.dto';
 import { plainToClass } from 'class-transformer';
 import { LaunchCodeStatusDto } from '../../dto/launch-code-status.dto';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 import { ParseObjectIdPipe } from '../../../pipes/parse-objectid.pipe';
 
 @Controller('code')
@@ -21,7 +20,7 @@ export class CodesController {
   }
   @Get(':id')
   async findOne(
-    @Param('id', ParseObjectIdPipe) id: ObjectId,
+    @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
   ): Promise<LaunchCodeStatusDto> {
     const codeModel = await this.codesService.findOne(id);
     return plainToClass(LaunchCodeStatusDto, codeModel);

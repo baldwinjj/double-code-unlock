@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnlocksController } from './unlocks.controller';
 import { CodesService } from '../../codes.service';
+import { UnlockLaunchCodeDto } from '../../dto/unlock-launch-code.dto';
 
 jest.mock('../../codes.service');
 
@@ -20,5 +21,12 @@ describe('UnlocksController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('Post /unlock', () => {
+    it('should call CodeService.unlock()', () => {
+      controller.create(new UnlockLaunchCodeDto());
+      expect(codesService.unlock).toHaveBeenCalled();
+    });
   });
 });
