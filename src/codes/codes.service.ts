@@ -17,6 +17,10 @@ export class CodesService {
     @InjectModel(Unlock.name) private readonly unlockModel: Model<Unlock>,
   ) {}
 
+  /**
+   * Creates a new launch key and generates two secret keys for it
+   * @param newLaunchCodeDto
+   */
   create(newLaunchCodeDto: NewLaunchCodeDto): Promise<Code> {
     // the number of secret keys could be configurable here as well
     // TODO: encrypt the keys stored in the DB
@@ -27,6 +31,10 @@ export class CodesService {
     return code.save();
   }
 
+  /**
+   * Retrieves the launch key by its id
+   * @param id
+   */
   async findOne(id: Types.ObjectId) {
     const code = await this.codeModel.findOne({ _id: id }).exec();
     if (!code) {
@@ -35,6 +43,12 @@ export class CodesService {
     return code;
   }
 
+  /**
+   * Adds an unlock event to the DB. If an unlock event exists within a given
+   * timeframe for each of a code's security keys, unlock the code.
+   * @param id
+   * @param secretKey
+   */
   async unlock({ id, secretKey }: UnlockLaunchCodeDto) {
     const code = await this.findOne(id);
     if (!code) {
