@@ -22,8 +22,8 @@ export class CodesService {
    * @param newLaunchCodeDto
    */
   create(newLaunchCodeDto: NewLaunchCodeDto): Promise<Code> {
-    // the number of secret keys could be configurable here as well
-    // TODO: encrypt the keys stored in the DB
+    // it would be better to store a hash of the secret keys in the database
+    // the launch code could also be encrypted for better security
     const secretKeys = Array(2)
       .fill(null)
       .map(() => randomStringGenerator());
