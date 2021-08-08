@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { NewLaunchCodeDto } from './dto/new-launch-code.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Code } from './entities/code.entity';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { UnlockLaunchCodeDto } from './dto/unlock-launch-code.dto';
 import { Unlock } from './entities/unlock.entity';
@@ -27,8 +27,12 @@ export class CodesService {
     return code.save();
   }
 
-  findOne(id: string) {
-    return this.codeModel.findOne({ _id: id }).exec();
+  async findOne(id: ObjectId) {
+    const code = await this.codeModel.findOne({ _id: id }).exec();
+    if (!code) {
+      throw new NotFoundException(`Code not found`);
+    }
+    return code;
   }
 
   async unlock({ id, secretKey }: UnlockLaunchCodeDto) {
