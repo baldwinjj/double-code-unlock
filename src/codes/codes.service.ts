@@ -6,10 +6,13 @@ import { Model } from 'mongoose';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { UnlockLaunchCodeDto } from './dto/unlock-launch-code.dto';
 import { Unlock } from './entities/unlock.entity';
+import { ConfigService } from '@nestjs/config';
+import { Status } from './enums/status.enum';
 
 @Injectable()
 export class CodesService {
   constructor(
+    private readonly configService: ConfigService,
     @InjectModel(Code.name) private readonly codeModel: Model<Code>,
     @InjectModel(Unlock.name) private readonly unlockModel: Model<Unlock>,
   ) {}
@@ -33,8 +36,26 @@ export class CodesService {
     if (!code) {
       throw new NotFoundException(`LaunchCode not found`);
     }
-    const unlock = new this.unlockModel({ code, secretKey: secretKey });
-    await unlock.save();
-    // TODO: query unlocks and unlock code if security keys match
+    // create unlock document:
+    if (code.secretKeys.includes(secretKey)) {
+      const unlock = new this.unlockModel({ code, secretKey: secretKey });
+      await unlock.save();
+    }
+    // retrieve unlock events for code within timeframe:
+    const interval = this.configService.get<number>('UNLOCK_TIMESPAN');
+    const startDateTime = new Date(new Date().getTime() - interval);
+    const unlockKeys: string[] = (
+      await this.unlockModel.find({
+        code,
+        createdAt: { $gt: startDateTime },
+      })
+    ).map((unlock) => unlock.secretKey);
+    // if every secretKey exists within timespan, unlock
+    if (code.secretKeys.every((key) => unlockKeys.includes(key))) {
+      await this.codeModel.updateOne(
+        { _id: id },
+        { $set: { status: Status.Unlocked } },
+      );
+    }
   }
 }

@@ -5,5 +5,5 @@ export default () => ({
     port: parseInt(process.env.DATABASE_PORT, 10) || 27017,
     database: process.env.DATABASE_NAME,
   },
-  unlockTimespan: parseInt(process.env.UNLOCK_TIMESPAN, 10) || 12000, // default 2 minutes
+  unlockTimespan: parseInt(process.env.UNLOCK_TIMESPAN, 10) || 120000, // default 2 minutes
 });
