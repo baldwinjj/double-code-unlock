@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common';
-import { CodesController } from './codes.controller';
+import { CodesController } from './controllers/codes/codes.controller';
 import { CodesService } from './codes.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Code, CodeSchema } from './entities/code.entity';
-
+import { Unlock, UnlockSchema } from './entities/unlock.entity';
+import { UnlocksController } from './controllers/unlocks/unlocks.controller';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Code.name, schema: CodeSchema }]),
+    MongooseModule.forFeature([
+      { name: Code.name, schema: CodeSchema },
+      { name: Unlock.name, schema: UnlockSchema },
+    ]),
   ],
-  controllers: [CodesController],
+  controllers: [CodesController, UnlocksController],
   providers: [CodesService],
 })
 export class CodesModule {}
